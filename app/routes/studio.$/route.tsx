@@ -1,9 +1,10 @@
-import {json, useLoaderData} from '@remix-run/react';
-import type {
-  MetaFunction,
-  LinksFunction,
-  LoaderFunction,
-  SerializeFrom,
+import {useLoaderData} from '@remix-run/react';
+import {
+  type MetaFunction,
+  type LinksFunction,
+  type LoaderFunction,
+  type SerializeFrom,
+  json,
 } from '@shopify/remix-oxygen';
 import {lazy, type ReactElement, Suspense} from 'react';
 import studioStyles from './studio.css?url';
