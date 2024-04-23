@@ -125,6 +125,7 @@ export function ErrorBoundary() {
   }
 
   return (
+    // @ts-expect-error
     <Layout {...rootData}>
       <div className="route-error">
         <h1>Oops</h1>

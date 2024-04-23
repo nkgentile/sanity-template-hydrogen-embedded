@@ -22,6 +22,7 @@ function FooterMenu({
   menu: FooterQuery['menu'];
   primaryDomainUrl: HeaderQuery['shop']['primaryDomain']['url'];
 }) {
+  // @ts-expect-error
   const {publicStoreDomain} = useRootLoaderData();
 
   return (

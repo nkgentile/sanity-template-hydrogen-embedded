@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 // Virtual entry point for the app
 import * as remixBuild from 'virtual:remix/server-build';
 import {

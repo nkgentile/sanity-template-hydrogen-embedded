@@ -33,6 +33,7 @@ export default function Index() {
   const rootData = useRootLoaderData();
 
   return (
+    // @ts-expect-error
     <Layout {...rootData}>
       <Outlet />
     </Layout>

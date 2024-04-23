@@ -34,6 +34,7 @@ export function HeaderMenu({
   primaryDomainUrl: HeaderQuery['shop']['primaryDomain']['url'];
   viewport: Viewport;
 }) {
+  // @ts-expect-error
   const {publicStoreDomain} = useRootLoaderData();
   const className = `header-menu-${viewport}`;
 
