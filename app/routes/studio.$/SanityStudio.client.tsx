@@ -2,13 +2,8 @@
  * To keep the worker bundle size small, only load
  * the Studio and its configuration in the client
  */
-import {useLocation} from '@remix-run/react';
-import {
-  type SourceOptions,
-  type StudioProps,
-  Studio,
-  defineConfig,
-} from 'sanity';
+import {type StudioProps, Studio, type SingleWorkspace} from 'sanity';
+import {defineSanityConfig} from 'sanity/config';
 
 /**
  * Prevent a consumer from importing into a worker/server bundle.
@@ -20,30 +15,22 @@ if (typeof document === 'undefined') {
 }
 
 type SanityStudioProps = Omit<StudioProps, 'config'> &
-  Pick<SourceOptions, 'projectId' | 'dataset'>;
+  Pick<SingleWorkspace, 'projectId' | 'dataset' | 'basePath'>;
 
-function SanityStudio(props: SanityStudioProps) {
-  const {projectId, dataset, ...rest} = props;
-  const location = useLocation();
-  const basePath = location.pathname;
+// `React.lazy` expects the component as the default export
+// @see https://react.dev/reference/react/lazy
+export default function SanityStudio(props: SanityStudioProps) {
+  const {projectId, dataset, basePath, ...rest} = props;
 
-  const config = defineConfig({
+  const config = defineSanityConfig({
     projectId,
     dataset,
-
     basePath,
   });
 
   return (
-    <div id="sanity">
+    <div id="sanity" data-ui="StudioLayout">
       <Studio {...rest} config={config} unstable_globalStyles />
     </div>
   );
 }
-
-export {SanityStudio};
-/**
- * `React.lazy` expects the component as the default export
- * @see https://react.dev/reference/react/lazy
- */
-export default SanityStudio;

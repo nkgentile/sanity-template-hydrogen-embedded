@@ -76,18 +76,24 @@ export const loader: LoaderFunction = ({context}) => {
   return json({
     projectId,
     dataset,
+    basePath: '/studio',
   });
 };
 
 export default function Studio() {
   // @ts-expect-error
-  const {projectId, dataset} = useLoaderData<SerializeFrom<typeof loader>>();
+  const {projectId, dataset, basePath} =
+    useLoaderData<SerializeFrom<typeof loader>>();
 
   return (
     <ClientOnly>
       {() => (
         <Suspense>
-          <SanityStudio projectId={projectId} dataset={dataset} />
+          <SanityStudio
+            projectId={projectId}
+            dataset={dataset}
+            basePath={basePath}
+          />
         </Suspense>
       )}
     </ClientOnly>
