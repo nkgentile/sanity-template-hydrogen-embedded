@@ -14,9 +14,11 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   type ShouldRevalidateFunction,
+  useLoaderData,
 } from '@remix-run/react';
 import {Layout} from '~/components/Layout';
 import type {ReactNode} from 'react';
+import {VisualEditing} from 'hydrogen-sanity/visual-editing';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -48,8 +50,8 @@ export const useRootLoaderData = () => {
 };
 
 export const loader: LoaderFunction = async ({context}) => {
-  const {storefront, customerAccount, cart} = context;
-  const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
+  const {storefront, customerAccount, cart, sanity, env, session} = context;
+  const publicStoreDomain = env.PUBLIC_STORE_DOMAIN;
 
   const isLoggedInPromise = customerAccount.isLoggedIn();
   const cartPromise = cart.get();
@@ -61,6 +63,8 @@ export const loader: LoaderFunction = async ({context}) => {
       footerMenuHandle: 'footer', // Adjust to your footer menu handle
     },
   });
+
+  const isPreviewMode = sanity.preview?.enabled || false;
 
   // await the header query (above the fold)
   const headerPromise = storefront.query(HEADER_QUERY, {
@@ -77,10 +81,11 @@ export const loader: LoaderFunction = async ({context}) => {
       header: await headerPromise,
       isLoggedIn: isLoggedInPromise,
       publicStoreDomain,
+      isPreviewMode,
     },
     {
       headers: {
-        'Set-Cookie': await context.session.commit(),
+        'Set-Cookie': await session.commit(),
       },
     },
   );
@@ -108,7 +113,15 @@ function RootLayout({children}: {children: ReactNode}) {
 export {RootLayout as Layout};
 
 export default function App() {
-  return <Outlet />;
+  // @ts-expect-error
+  const {isPreviewMode} = useLoaderData<SerializeFrom<typeof loader>>();
+
+  return (
+    <>
+      <Outlet />
+      {isPreviewMode ? <VisualEditing /> : null}
+    </>
+  );
 }
 
 export function ErrorBoundary() {

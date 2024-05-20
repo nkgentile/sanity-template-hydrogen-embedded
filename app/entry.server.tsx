@@ -20,6 +20,7 @@ export default async function handleRequest(
       `https://${projectId}.api.sanity.io`,
       `wss://${projectId}.api.sanity.io`,
     ],
+    frameAncestors: [`'self'`],
   });
 
   const body = await renderToReadableStream(

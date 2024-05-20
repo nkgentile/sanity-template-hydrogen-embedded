@@ -8,12 +8,14 @@ import {
   createStorefrontClient,
   storefrontRedirect,
   createCustomerAccountClient,
+  createWithCache,
 } from '@shopify/hydrogen';
 import {
   createRequestHandler,
   getStorefrontHeaders,
   type AppLoadContext,
 } from '@shopify/remix-oxygen';
+import {createSanityLoader} from 'hydrogen-sanity';
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 
@@ -39,6 +41,7 @@ export default {
         caches.open('hydrogen'),
         AppSession.init(request, [env.SESSION_SECRET]),
       ]);
+      const withCache = createWithCache({cache, waitUntil, request});
 
       /**
        * Create Hydrogen's Storefront client.
@@ -77,6 +80,28 @@ export default {
         cartQueryFragment: CART_QUERY_FRAGMENT,
       });
 
+      const sanity = createSanityLoader({
+        withCache,
+
+        client: {
+          projectId: env.SANITY_PROJECT_ID,
+          dataset: env.SANITY_DATASET,
+          // apiVersion: env.SANITY_API_VERSION ?? 'v2022-03-07',
+          // useCdn: process.env.NODE_ENV === 'production',
+        },
+        // Optionally, set a global default cache strategy, defaults to CacheLong
+        // strategy: CacheShort() | null,
+        // Optionally, enable Visual Editing
+        // See "Visual Editing" section below to setup the preview route
+        preview: env.SANITY_API_TOKEN
+          ? {
+              enabled: session.get('projectId') === env.SANITY_PROJECT_ID,
+              token: env.SANITY_API_TOKEN,
+              studioUrl: '/studio',
+            }
+          : undefined,
+      });
+
       /**
        * Create a Remix request handler and pass
        * Hydrogen's Storefront client to the loader context.
@@ -89,6 +114,7 @@ export default {
           storefront,
           customerAccount,
           cart,
+          sanity,
           env,
           waitUntil,
         }),

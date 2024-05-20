@@ -1,6 +1,7 @@
 import {visionTool} from '@sanity/vision';
 import {defineConfig, type SingleWorkspace} from 'sanity';
 import {structureTool} from 'sanity/structure';
+import {presentationTool} from 'sanity/presentation';
 import {schema} from './schema';
 
 /**
@@ -29,7 +30,15 @@ export function defineSanityConfig(config: SanityConfig) {
 
   return defineConfig({
     ...config,
-    plugins: [structureTool(), visionTool()],
+    plugins: [
+      presentationTool({
+        previewUrl: {
+          previewMode: {enable: '/api/preview'},
+        },
+      }),
+      structureTool(),
+      visionTool(),
+    ],
     schema,
   });
 }
